@@ -8,14 +8,26 @@
 import UIKit
 
 class ResultViewController: UIViewController {
+    @IBOutlet weak var info: UILabel!
+    @IBOutlet weak var finalResult: UILabel!
+    
+    var result: Float?
+    var numberOfPeople: Int?
+    var TipPercentage: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        finalResult.text = "\(result!)"
 
-        // Do any additional setup after loading the view.
+        info.text = "Split between \(numberOfPeople!) people, with tip \(TipPercentage!)"
     }
     
-
+    
+    @IBAction func reButtonPressed(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
     /*
     // MARK: - Navigation
 

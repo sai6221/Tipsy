@@ -15,60 +15,42 @@ class ViewController: UIViewController {
     @IBOutlet weak var tenPctButton: UIButton!
     @IBOutlet weak var twentyPctButton: UIButton!
     
-    var tipPercent: Float = 0.0
+    var tipPercent: Float?
+    var tip: String?
+    var result:Float?
+    var tBrain = TipsyBrain()
     
     override func viewDidLoad() {
-        splitNumberLabel.text = String(2)
         super.viewDidLoad()
-        
+        splitNumberLabel.text = String(tBrain.get_splitNumber())
     }
 
     @IBAction func tipChanged(_ sender: UIButton) {
-        //update UI
-        updateUI()
-        let button = sender.currentTitle!
-        updateTip(i: button)
+        billTextField.endEditing(true)
+        tBrain.updateUI(a: zeroPctButton, b: tenPctButton, c: twentyPctButton)
+        tBrain.updateTip(a: zeroPctButton, b: tenPctButton, c: twentyPctButton,i: tBrain.get_title(but: sender))
         sender.isSelected = true
-        tipPercent = Float(String(button.dropLast()))!/100
-        print(tipPercent)
+        tip = tBrain.get_title(but: sender)
+        tipPercent = tBrain.get_perTip(p: tBrain.get_title(but: sender))
     }
-
-
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
-        splitNumberLabel.text = String(Int(sender.value))
-        print(sender.value)
+        tBrain.update_splitNumber(p: sender.value)
+        splitNumberLabel.text = String(tBrain.get_splitNumber())
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
-//        print(tipPercent)
-        updateUI()
+        result = tBrain.get_result(bt: billTextField.text!,tp: tipPercent!)
+        billTextField.text = ""
+        tBrain.updateUI(a: zeroPctButton, b: tenPctButton, c: twentyPctButton)
+        performSegue(withIdentifier: "goToResult", sender: nil)
     }
-    
-    func updateTip(i: String){
-        if(i=="0%"){
-            tenPctButton.isSelected = false
-            twentyPctButton.isSelected = false
-            zeroPctButton.backgroundColor = #colorLiteral(red: 0.4500938654, green: 0.9813225865, blue: 0.4743030667, alpha: 0.6115434659)
-            
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if(segue.identifier == "goToResult"){
+            let DestinationVC = segue.destination as! ResultViewController
+            DestinationVC.result = result
+            DestinationVC.numberOfPeople = tBrain.get_splitNumber()
+            DestinationVC.TipPercentage = tip
         }
-        else if(i=="10%"){
-            zeroPctButton.isSelected = false
-            twentyPctButton.isSelected = false
-            tenPctButton.backgroundColor = #colorLiteral(red: 0.4500938654, green: 0.9813225865, blue: 0.4743030667, alpha: 0.6115434659)
-        }
-        else{
-            zeroPctButton.isSelected = false
-            tenPctButton.isSelected = false
-            twentyPctButton.backgroundColor = #colorLiteral(red: 0.4500938654, green: 0.9813225865, blue: 0.4743030667, alpha: 0.6115434659)
-        }
-    }
-    func updateUI(){
-        zeroPctButton.isSelected = false
-        tenPctButton.isSelected = false
-        twentyPctButton.isSelected = false
-        zeroPctButton.backgroundColor = UIColor.clear
-        tenPctButton.backgroundColor = UIColor.clear
-        twentyPctButton.backgroundColor = UIColor.clear
     }
 }
 
